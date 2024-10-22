@@ -1,6 +1,5 @@
 require('dotenv').config()
 
-console.log(process.env.PORT);
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 

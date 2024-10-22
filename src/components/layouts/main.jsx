@@ -1,12 +1,29 @@
+// Ressources externes
 import React from 'react'
-import { Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 
-import TopBar from '../modules/top-bar/top-bar'
+// Ressources internes
+import TopbarLayout from './topbar';
+
+const links = [
+  { "label" : "Paramètres", "route" : "/settings"}
+]
 
 const MainLayout = () => {
   return (<>
-      <TopBar />
-      <Outlet />
+
+    <div className="flex w-full h-full flex-col">
+
+      { /* Top bar header */}
+      <TopbarLayout title="Tableau virtuel" links={links} />
+
+      { /* Main section */}
+      <main className="w-full h-full z-20 m-0">
+        <Outlet />
+      </main>
+
+    </div>
+
   </>)
 }
 

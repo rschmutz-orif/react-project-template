@@ -8,9 +8,8 @@ import MainLayout from './components/layouts/main';
 import SettingsLayout from './components/layouts/settings';
 
 // Modules Components
-import PostItsBoard from './components/modules/post-its/board';
-import PostItsTable from './components/modules/post-its/table';
 import SettingsForm from './components/modules/settings/form';
+import PostItsList from './components/modules/post-its/list';
 
 // Utils
 import { addPostIt, getPostIts, deletePostIt } from './utils/db/post-its';
@@ -79,15 +78,15 @@ root.render(<BrowserRouter>
     <Routes>
       
         <Route path="/" element={<MainLayout />}>
-            <Route index element={<PostItsBoard />} />
-            <Route path="board" element={<PostItsBoard />} />
-            <Route path="table" element={<PostItsTable />} /> 
+            <Route index element={<PostItsList mode="board" />} />
+            <Route path=":mode" element={<PostItsList mode="table" />} />
+            <Route path="*" element={<PostItsList mode="board" />} /> 
         </Route>
 
         <Route path="/settings" element={<SettingsLayout />}>
             <Route index element={<SettingsForm />} />
         </Route>
 
-        <Route path="*" element={<p> No matches</p>} />
     </Routes>
+
 </BrowserRouter>);
