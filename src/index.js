@@ -1,77 +1,93 @@
-import React, { useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client'
 
 import { BrowserRouter, Routes, Route, } from "react-router-dom";
 
 // Layouts
-import PrivateLayout from './components/layouts/private';
-import PublicLayout from './components/layouts/public';
+import MainLayout from './components/layouts/main';
+import SettingsLayout from './components/layouts/settings';
 
 // Modules Components
-import LoginForm from './components/modules/login/form';
-import RegisterForm from './components/modules/register/form';
+import PostItsBoard from './components/modules/post-its/board';
+import PostItsTable from './components/modules/post-its/table';
+import SettingsForm from './components/modules/settings/form';
 
-import Home from './components/modules/home/home';
+// Utils
+import { addPostIt, getPostIts, deletePostIt } from './utils/db/post-its';
 
-import TodosList from './components/modules/todos/create';
-import TodosCreate from './components/modules/todos/create';
-import TodosEdit from './components/modules/todos/edit';
-import TodosRemove from './components/modules/todos/remove';
-
-// Protected Route
-import { ProtectedRoute } from './components/layouts/protected-route';
-
-
-// Auth utils
-import { AuthProvider, useAuth } from './hooks/useAuth';
-
+// Styles
 import './index.pcss';
 
 const container = document.getElementById('root');
 const root = createRoot(container);
 
-const NoMatch = () => {
-    return (<ProtectedRoute>
-        <div className="w-full h-full flex items-center justify-center">
-            <p>404 - Aucune page trouvée</p>
-        </div>
-    </ProtectedRoute>);
-}
+const App = () => {
+  const [text, setText] = useState('');
+  const [postIts, setPostIts] = useState([]);
 
-const Logout = () => {
-    const { logout } = useAuth();
+  // Charger les post-its au démarrage
+  useEffect(() => {
+    const fetchData = async () => {
+      const storedPostIts = await getPostIts();
+      setPostIts(storedPostIts);
+    };
+    fetchData();
+  }, []);
 
-    useEffect(() => {
-        logout();
-    })
-    return <></>;
-}
+  // Ajouter un post-it
+  const handleAddPostIt = async () => {
+    if (text.trim()) {
+      const newPostIt = { text };
+      await addPostIt(newPostIt);
+      setPostIts([...postIts, newPostIt]);
+      setText('');
+    }
+  };
+
+  // Supprimer un post-it
+  const handleDeletePostIt = async (id) => {
+    await deletePostIt(id);
+    setPostIts(postIts.filter(postIt => postIt.id !== id));
+  };
+
+  return (
+    <div className="App">
+      <h1>Post-it Virtuels</h1>
+      <div>
+        <input 
+          type="text" 
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="Écris quelque chose..." 
+        />
+        <button onClick={handleAddPostIt}>Ajouter</button>
+      </div>
+
+      <div className="post-it-container">
+        {postIts.map(postIt => (
+          <div key={postIt.id} className="post-it">
+            <p>{postIt.text}</p>
+            <button onClick={() => handleDeletePostIt(postIt.id)}>Supprimer</button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 root.render(<BrowserRouter>
-    <AuthProvider>
-        <Routes>
-            <Route path="/login" element={<PublicLayout />}>
-                <Route index element={<LoginForm />} />
-            </Route>
+    <Routes>
+      
+        <Route path="/" element={<MainLayout />}>
+            <Route index element={<PostItsBoard />} />
+            <Route path="board" element={<PostItsBoard />} />
+            <Route path="table" element={<PostItsTable />} /> 
+        </Route>
 
-            <Route path="/register" element={<PublicLayout />}>
-                <Route index element={<RegisterForm />} />
-            </Route>
+        <Route path="/settings" element={<SettingsLayout />}>
+            <Route index element={<SettingsForm />} />
+        </Route>
 
-            <Route path="/home" element={<PrivateLayout />}>
-                <Route index element={<Home />} />
-            </Route>
-
-            <Route path="/todos" element={<PrivateLayout />}>
-                <Route index element={<TodosList />} />
-                <Route path="create" element={<TodosCreate />} />
-                <Route path=":todoId/edit" element={<TodosEdit />} />
-                <Route path=":todoId/remove" element={<TodosRemove />} />
-            </Route>
-
-            <Route path="/logout" element={<Logout />} />
-
-            <Route path="*" element={<NoMatch />} />
-        </Routes>
-    </AuthProvider>
+        <Route path="*" element={<p> No matches</p>} />
+    </Routes>
 </BrowserRouter>);
