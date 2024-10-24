@@ -4,12 +4,12 @@ import PostItsSearchbar from './search';
 import PostItsModeSelector from './mode-selector';
 import PostItsCreate from './create';
 
-const PostItsToolsBar = ({ search, setSearch }) => {
+const PostItsToolsBar = ({  }) => {
 
     return (<>
         <section className="w-full h-auto border-b mb-0 sticky">
-            <div className="flex w-full h-16 sm:h-20 max-w-7xl m-auto px-2 flex-wrap">
-                <PostItsSearchbar search={search} setSearch={setSearch}  />
+            <div className="flex w-full h-auto max-w-7xl m-auto px-2 flex-wrap">
+                <PostItsSearchbar />
                 <PostItsModeSelector />
                 <PostItsCreate />
             </div>

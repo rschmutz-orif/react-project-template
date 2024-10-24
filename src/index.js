@@ -1,18 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client'
 
-import { BrowserRouter, Routes, Route, } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 // Layouts
 import MainLayout from './components/layouts/main';
 import SettingsLayout from './components/layouts/settings';
 
-// Modules Components
+// Components 
 import SettingsForm from './components/modules/settings/form';
-import PostItsList from './components/modules/post-its/list';
+import PostItsBoard from './components/modules/post-its/list/board';
+import PostItsGrid from './components/modules/post-its/list/grid';
+import PostItsTable from './components/modules/post-its/list/table';
+
+// Contexts provider
+import SearchProvider from './components/modules/search/provider';
 
 // Utils
-import { addPostIt, getPostIts, deletePostIt } from './utils/db/post-its';
+import Redirect from './utils/Redirect'
 
 // Styles
 import './index.pcss';
@@ -20,6 +25,29 @@ import './index.pcss';
 const container = document.getElementById('root');
 const root = createRoot(container);
 
+root.render(<BrowserRouter>
+  <SearchProvider>
+    <Routes>
+      
+      <Route path="/" element={<MainLayout />}>
+        <Route index element={<Redirect to="/board" />} />
+        <Route path="board" element={<PostItsBoard />} />
+        <Route path="grid" element={<PostItsGrid />} />
+        <Route path="table" element={<PostItsTable />} />
+        <Route path="*" element={<Redirect to="/board" />} />
+      </Route>
+
+      <Route path="/settings" element={<SettingsLayout />}>
+        <Route index element={<SettingsForm />} />
+      </Route>
+
+    </Routes>
+  </SearchProvider>
+</BrowserRouter>);
+
+
+
+/*
 const App = () => {
   const [text, setText] = useState('');
   const [postIts, setPostIts] = useState([]);
@@ -53,11 +81,11 @@ const App = () => {
     <div className="App">
       <h1>Post-it Virtuels</h1>
       <div>
-        <input 
-          type="text" 
+        <input
+          type="text"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Écris quelque chose..." 
+          placeholder="Écris quelque chose..."
         />
         <button onClick={handleAddPostIt}>Ajouter</button>
       </div>
@@ -73,20 +101,4 @@ const App = () => {
     </div>
   );
 };
-
-root.render(<BrowserRouter>
-    <Routes>
-      
-        <Route path="/" element={<MainLayout />}>
-            <Route index element={<PostItsList mode="board" />} />
-            <Route path=":mode" element={<PostItsList mode="table" />} />
-            <Route path="*" element={<PostItsList mode="board" />} /> 
-        </Route>
-
-        <Route path="/settings" element={<SettingsLayout />}>
-            <Route index element={<SettingsForm />} />
-        </Route>
-
-    </Routes>
-
-</BrowserRouter>);
+*/
