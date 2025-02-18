@@ -1,5 +1,8 @@
 module.exports = {
-    content: ['./src/**/*.{js,jsx,html}'],
+    content: [
+        './src/**/*.{js,jsx,html}',
+        './node_modules/@rsch-org/**/*.{js,jsx,html}'
+    ],
     theme: {
         extend: {
             colors: {
